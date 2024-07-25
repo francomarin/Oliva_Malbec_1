@@ -9,7 +9,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 ma = Marshmallow()
 
-def create_app(config_class = "config.Config"):
+def create_app():
     app_context = os.getenv("FLASK_CONTEXT")
     app = Flask(__name__)
     config_object = factory(app_context if app_context else "development")
