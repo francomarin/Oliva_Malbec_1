@@ -40,7 +40,7 @@ package "Models" {
         +Integer grade
     }
 
-    User "1" --> "0..*" UserData
+    User "1" --> "1..*" UserData
     User "1" --> "0..*" Profile
     User "1" --> "0..*" CourseStudent
     Role "1" --> "0..*" Profile
