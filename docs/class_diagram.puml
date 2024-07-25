@@ -3,7 +3,6 @@
 package "Models" {
     class User {
         +Integer id
-        +String username
         +String email
         +String password_hash
     }
