@@ -19,8 +19,10 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
+    #TABLAS 
     from app.models.userData import UserData
     from app.models.user import User
+    from app.models.role import Role
     
     @app.shell_context_processor
     def ctx():
