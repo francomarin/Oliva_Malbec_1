@@ -18,3 +18,5 @@ class User(db.Model):
     userdata_id = db.Column(db.Integer, db.ForeignKey("userdata.id"))
     #Back references to userdata
     userdata = db.relationship("UserData", back_populates = "user")
+    #One to One relationship with Profile
+    profile = db.relationship("Profile", uselist = False, back_populates = "user")
