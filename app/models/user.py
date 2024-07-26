@@ -13,3 +13,8 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+        #ForeignKey to UserData
+    userdata_id = db.Column(db.Integer, db.ForeignKey("userdata.id"))
+    #Back references to userdata
+    userdata = db.relationship("UserData", back_populates = "user")

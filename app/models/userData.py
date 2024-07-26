@@ -9,3 +9,6 @@ class UserData(db.Model):
     dni = db.Column(db.String(16), nullable = True, unique = True)
     phone = db.Column(db.String(32), nullable = True)
     address = db.Column(db.String(64), nullable = True)
+
+    #One to One relationship with User
+    user = db.relationship("User", uselist = False, back_populates = "userdata")

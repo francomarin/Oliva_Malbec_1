@@ -18,6 +18,9 @@ def create_app():
     ma.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
+
+    from app.models.userData import UserData
+    from app.models.user import User
     
     @app.shell_context_processor
     def ctx():
