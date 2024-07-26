@@ -21,4 +21,4 @@ class User(db.Model):
     #One to One relationship with Profile
     profile = db.relationship("Profile", uselist = False, back_populates = "user")
     #One to Many relationship with CourseUser
-    course_user = db.relationship("CourseUser", backref = "user")
+    course_user = db.relationship("CourseUser", back_populates = "user")

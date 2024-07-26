@@ -7,4 +7,4 @@ class Course(db.Model):
     name = db.Column(db.String(64), nullable = False)
 
     #One to Many relationship with CourseUser
-    course_user = db.relationship("CourseUser", backref = "course")
+    course_user = db.relationship("CourseUser", back_populates = "course")
