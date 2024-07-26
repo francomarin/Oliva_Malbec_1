@@ -41,11 +41,10 @@ package "Models" {
     }
 
     User "1" --> "1..*" UserData
-    User "1" --> "0..*" Profile
-    User "1" --> "0..*" CourseStudent
-    Role "1" --> "0..*" Profile
-    User "0..*" --> "0..*" Role
-    Course "1" --> "0..*" CourseStudent
+    User "1" --> "1" Profile
+    User "1" --> "n" CourseStudent
+    Role "1" --> "n" Profile
+    Course "1" --> "n" CourseStudent
 }
 
 @enduml
