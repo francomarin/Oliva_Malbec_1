@@ -17,7 +17,9 @@ def create_app():
 
     #Blueprints
     from app.resources.users import user_bp
+    from app.resources.courses import course_bp
     app.register_blueprint(user_bp)
+    app.register_blueprint(course_bp)
     
     ma.init_app(app)
     db.init_app(app)
