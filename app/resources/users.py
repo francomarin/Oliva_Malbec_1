@@ -77,3 +77,30 @@ def get_user_by_id(user_id):
         "last_name" : user.userdata.last_name
     }
     return jsonify({"user": data}), 200
+
+@user_bp.route("/users/<int:user_id>", methods = ["PUT"])
+def update_user(user_id):
+    user = User.query.filter_by(id = user_id).first()
+
+    if not user:
+        return jsonify({"message": "User not found"}), 400
+
+    data = request.get_json()
+
+    if 'email' in data:
+            user.email = data['email']
+    if 'password' in data:
+        user.set_password(data['password'])
+    if 'dni' in data:
+        user.userdata.dni = data['dni']
+    if 'first_name' in data:
+        user.userdata.first_name = data['first_name']
+    if 'last_name' in data:
+        user.userdata.last_name = data['last_name']
+    if 'address' in data:
+        user.userdata.address = data['address']
+    if 'phone' in data:
+        user.userdata.phone = data['phone']
+
+    db.session.commit()
+    return jsonify({"message": "User updated successfully"}), 200 
