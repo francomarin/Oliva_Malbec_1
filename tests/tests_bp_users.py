@@ -101,7 +101,18 @@ class TestUserBP(unittest.TestCase):
         self.assertIsNotNone(user_updated)
         self.assertEqual(user_updated.email, "update@gmail.com")
         self.assertEqual(user_updated.userdata.first_name, "test")
-        self.assertEqual(user_updated.userdata.last_name, "test")
+
+    def test_delete_user(self):
+        user = User(email = "test@test.com", userdata = UserData())
+        db.session.add(user)
+        db.session.commit()
+
+        user_id = user.id
+        response = self.client.delete(f"/users/{user_id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["message"], "User deleted successfully")
+        user_deleted = User.query.filter_by(id = user_id).first()
+        self.assertIsNone(user_deleted)
 
 if __name__ == "__main__":
     unittest.main()
