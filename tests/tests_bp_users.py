@@ -82,5 +82,26 @@ class TestUserBP(unittest.TestCase):
         self.assertEqual(response.json["user"]["id"], user_id)
         self.assertEqual(response.json["user"]["email"], "test@gmail.com")
 
+    def test_update_user(self):
+        user = User(email = "test@gmail.com", userdata = UserData())
+        db.session.add(user)
+        db.session.commit()
+
+        data = {
+            "email" : "update@gmail.com",
+            "first_name" : "test",
+            "last_name" : "test"
+        }
+        user_id = user.id
+        response = self.client.put(f"/users/{user_id}", json = data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["message"], "User updated successfully")
+
+        user_updated = User.query.filter_by(id = user_id).first()
+        self.assertIsNotNone(user_updated)
+        self.assertEqual(user_updated.email, "update@gmail.com")
+        self.assertEqual(user_updated.userdata.first_name, "test")
+        self.assertEqual(user_updated.userdata.last_name, "test")
+
 if __name__ == "__main__":
     unittest.main()
