@@ -62,3 +62,18 @@ def get_all_users():
         }
         users_list.append(data)
     return jsonify({"users": users_list}), 200
+
+@user_bp.route("/users/<int:user_id>", methods = ["GET"])
+def get_user_by_id(user_id):
+    user = User.query.filter_by(id = user_id).first()
+
+    if not user:
+        return jsonify({"message": "User not found"}), 400
+
+    data = {
+        "id" : user.id,
+        "email" : user.email,
+        "first_name" : user.userdata.first_name,
+        "last_name" : user.userdata.last_name
+    }
+    return jsonify({"user": data}), 200
