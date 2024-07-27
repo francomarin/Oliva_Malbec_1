@@ -70,5 +70,17 @@ class TestUserBP(unittest.TestCase):
         self.assertIn("test1@test.com", users_emails)
         self.assertIn("test2@test.com", users_emails)    
 
+    def test_get_user_by_id(self):
+        user = User(email = "test@gmail.com", userdata = UserData())
+        db.session.add(user)
+        db.session.commit()
+
+        user_id = user.id
+        response = self.client.get(f"/users/{user_id}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["user"]["id"], user_id)
+        self.assertEqual(response.json["user"]["email"], "test@gmail.com")
+
 if __name__ == "__main__":
     unittest.main()
