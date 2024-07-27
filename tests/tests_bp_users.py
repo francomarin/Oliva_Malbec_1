@@ -5,6 +5,7 @@ from app import db, create_app
 from app.models.user import User
 from app.models.profile import Profile
 from app.models.role import Role
+from app.models.userData import UserData
 from app.utils.initializers import initialize_roles
 
 class TestUserBP(unittest.TestCase):
@@ -50,6 +51,24 @@ class TestUserBP(unittest.TestCase):
         self.assertIsNotNone(created_profile)
         self.assertEqual(created_profile.role_id, role.id)
         self.assertEqual(created_profile.user_id, created_user_id)
+
+    def test_get_all_users(self):
+        user1 = User(email = "test1@test.com", userdata = UserData())
+        user2 = User(email = "test2@test.com", userdata = UserData())
+        db.session.add(user1)
+        db.session.add(user2)
+        db.session.commit()
+
+        response = self.client.get("/users")
+
+        self.assertEqual(response.status_code, 200)
+        users = response.json["users"]
+
+        self.assertIsNotNone(users)
+
+        users_emails = [user["email"] for user in users]
+        self.assertIn("test1@test.com", users_emails)
+        self.assertIn("test2@test.com", users_emails)    
 
 if __name__ == "__main__":
     unittest.main()
