@@ -19,3 +19,17 @@ def create_course():
     db.session.add(course)
     db.session.commit()
     return jsonify({"message": "Course registered successfully", "id": course.id}), 201
+
+@course_bp.route("/courses/<int:course_id>", methods = ["PUT"])
+def update_course(course_id):
+    course = Course.query.filter_by(id = course_id).first()
+
+    if not course:
+        return jsonify({"message": "Course not found"}), 400
+
+    data = request.get_json()
+
+    course.name = data["name"]
+
+    db.session.commit()
+    return jsonify({"message": "Course updated successfully"}), 200
