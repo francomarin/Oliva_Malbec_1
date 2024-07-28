@@ -31,7 +31,19 @@ def get_course_by_id(course_id):
         "id" : course.id,
         "name" : course.name
     }
-    return jsonify({"course": data}), 200    
+    return jsonify({"course": data}), 200  
+
+@course_bp.route("/courses", methods = ["GET"])
+def get_all_courses():
+    courses = Course.query.all()
+    courses_list = []
+    for course in courses:
+        data = {
+            "id" : course.id,
+            "name" : course.name
+        }
+        courses_list.append(data)
+    return jsonify({"courses": courses_list}), 200  
 
 @course_bp.route("/courses/<int:course_id>", methods = ["PUT"])
 def update_course(course_id):
