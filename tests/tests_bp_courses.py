@@ -39,3 +39,20 @@ class TestCourseBP(unittest.TestCase):
         self.assertIsNotNone(created_course)
         self.assertEqual(created_course.name, "test")
         self.assertEqual(created_course.id, created_course_id)
+
+    def test_update_course(self):
+        course = Course(name = "test")
+        db.session.add(course)
+        db.session.commit()
+
+        data = {
+            "name": "updated"
+        }
+        course_id = course.id
+        response = self.client.put(f"/courses/{course_id}", json = data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["message"], "Course updated successfully"), 200
+
+        course_updated = Course.query.filter_by(id = course_id).first()
+        self.assertIsNotNone(course_updated)
+        self.assertEqual(course_updated.name, "updated")
