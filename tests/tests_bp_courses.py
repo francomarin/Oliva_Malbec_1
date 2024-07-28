@@ -85,3 +85,18 @@ class TestCourseBP(unittest.TestCase):
         course_updated = Course.query.filter_by(id = course_id).first()
         self.assertIsNotNone(course_updated)
         self.assertEqual(course_updated.name, "updated")
+
+    def test_delete_course(self):
+        course = Course(name = "test")
+        db.session.add(course)
+        db.session.commit()
+
+        course_id = course.id
+        response = self.client.delete(f"/courses/{course_id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json["message"], "Course deleted successfully"), 200
+        course_deleted = Course.query.filter_by(id = course_id).first()
+        self.assertIsNone(course_deleted)
+
+if __name__ == "__main__":
+    unittest.main()        
