@@ -58,3 +58,14 @@ def update_course(course_id):
 
     db.session.commit()
     return jsonify({"message": "Course updated successfully"}), 200
+
+@course_bp.route("/courses/<int:course_id>", methods = ["DELETE"])
+def delete_course(course_id):
+    course = Course.query.filter_by(id = course_id).first()
+
+    if not course:
+        return jsonify({"message": "Course not found"}), 400
+
+    db.session.delete(course)
+    db.session.commit()
+    return jsonify({"message": "Course deleted successfully"}), 200
