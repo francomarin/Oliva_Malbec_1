@@ -103,4 +103,25 @@ def enroll_user():
         return jsonify({"message": f"{str(e)} is required"}), 400
 
     except Exception as e:
-        return jsonify({"message": str(e)}), 404        
+        return jsonify({"message": str(e)}), 404   
+
+@course_bp.route("/courses/<int:course_id>/users", methods = ["GET"])
+def get_users_by_course(course_id):
+    try:
+        fetch_course(course_id)
+        courses_users = CourseUser.query.filter_by(course_id = course_id).all()
+        users_list = []
+        for course_user  in courses_users:
+            user = course_user.user
+            data = {
+                "id" : user.id,
+                "email" : user.email,
+                "dni" : user.userdata.dni,
+                "first_name" : user.userdata.first_name,
+                "last_name" : user.userdata.last_name,
+                "grade" : course_user.grade
+            }
+            users_list.append(data)
+        return jsonify({"users": users_list}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 404     
