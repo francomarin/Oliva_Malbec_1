@@ -55,10 +55,7 @@ def get_course_by_id(course_id):
 @course_bp.route("/courses/<int:course_id>", methods = ["PUT"])
 def update_course(course_id):
     try:
-        course = Course.query.filter_by(id = course_id).first()
-
-        if not course:
-            return jsonify({"message": "Course not found"}), 400
+        course = fetch_course(course_id)
 
         data = request.get_json()
 
@@ -82,3 +79,28 @@ def delete_course(course_id):
         return jsonify({"message": "Course deleted successfully"}), 200
     except Exception as e:
         return jsonify({"message": str(e)}), 404
+
+@course_bp.route("/courses/enroll", methods = ["POST"])
+def enroll_user():
+    try:
+        data = request.get_json()
+
+        user_id = data["user_id"]
+        course_id = data["course_id"]
+        grade = data.get("grade")
+
+        fetch_user(user_id)
+        fetch_course(course_id)
+        fetch_course_user(user_id = user_id, course_id = course_id)
+
+        course_user = CourseUser(user_id = user_id, course_id= course_id, grade = grade)
+        db.session.add(course_user)
+        db.session.commit()
+        return jsonify({"message": "User enrolled successfully"}), 201
+
+    #Exception for required camps -> user_id and course_id
+    except KeyError as e:
+        return jsonify({"message": f"{str(e)} is required"}), 400
+
+    except Exception as e:
+        return jsonify({"message": str(e)}), 404        
