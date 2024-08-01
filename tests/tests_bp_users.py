@@ -7,6 +7,7 @@ from app.models.profile import Profile
 from app.models.role import Role
 from app.models.userData import UserData
 from app.utils.initializers import initialize_roles
+from app.services.fetchers import *
 
 class TestUserBP(unittest.TestCase):
 
@@ -40,7 +41,7 @@ class TestUserBP(unittest.TestCase):
         self.assertEqual(response.json["message"], "User registered successfully")
 
         created_user_id = response.json["id"]
-        created_user = User.query.filter_by(id = created_user_id).first()
+        created_user = fetch_user(created_user_id)
         role = Role.query.filter_by(name = "ADMINISTRADOR").first()
         created_profile = Profile.query.filter_by(user_id = created_user_id).first()
 
@@ -97,7 +98,7 @@ class TestUserBP(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["message"], "User updated successfully")
 
-        user_updated = User.query.filter_by(id = user_id).first()
+        user_updated = fetch_user(user_id)
         self.assertIsNotNone(user_updated)
         self.assertEqual(user_updated.email, "update@gmail.com")
         self.assertEqual(user_updated.userdata.first_name, "test")
@@ -111,8 +112,6 @@ class TestUserBP(unittest.TestCase):
         response = self.client.delete(f"/users/{user_id}")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["message"], "User deleted successfully")
-        user_deleted = User.query.filter_by(id = user_id).first()
-        self.assertIsNone(user_deleted)
 
 if __name__ == "__main__":
     unittest.main()

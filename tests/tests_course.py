@@ -2,6 +2,7 @@ import unittest
 import os
 from app import db, create_app
 from app.models.course import Course
+from app.services.fetchers import *
 
 class TestCourseModel(unittest.TestCase):
 
@@ -23,7 +24,7 @@ class TestCourseModel(unittest.TestCase):
         db.session.add(course)
         db.session.commit()
 
-        fetched_course = Course.query.filter_by(name = "test").first()
+        fetched_course = fetch_course(course.id)
         self.assertIsNotNone(fetched_course)
         self.assertEqual(fetched_course.name, "test")
 

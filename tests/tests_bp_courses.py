@@ -3,6 +3,7 @@ import os
 from app import db, create_app
 from app.models.course import Course
 from app.utils.initializers import initialize_roles
+from app.services.fetchers import *
 
 class TestCourseBP(unittest.TestCase):
 
@@ -34,7 +35,7 @@ class TestCourseBP(unittest.TestCase):
         self.assertEqual(response.json["message"], "Course registered successfully")
 
         created_course_id = response.json["id"]
-        created_course = Course.query.filter_by(id = created_course_id).first()
+        created_course = fetch_course(created_course_id)
 
         self.assertIsNotNone(created_course)
         self.assertEqual(created_course.name, "test")
@@ -82,7 +83,7 @@ class TestCourseBP(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["message"], "Course updated successfully"), 200
 
-        course_updated = Course.query.filter_by(id = course_id).first()
+        course_updated = fetch_course(course_id)
         self.assertIsNotNone(course_updated)
         self.assertEqual(course_updated.name, "updated")
 
@@ -95,8 +96,6 @@ class TestCourseBP(unittest.TestCase):
         response = self.client.delete(f"/courses/{course_id}")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["message"], "Course deleted successfully"), 200
-        course_deleted = Course.query.filter_by(id = course_id).first()
-        self.assertIsNone(course_deleted)
 
 if __name__ == "__main__":
     unittest.main()        

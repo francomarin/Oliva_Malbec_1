@@ -2,6 +2,7 @@ import unittest
 import os
 from app import db, create_app
 from app.models.user import User
+from app.services.fetchers import *
 
 class TestUserModel(unittest.TestCase):
 
@@ -24,7 +25,7 @@ class TestUserModel(unittest.TestCase):
         db.session.add(user)
         db.session.commit()
 
-        fetched_user = User.query.filter_by(email = "test@test.com").first()
+        fetched_user = fetch_user(user.id)
         self.assertIsNotNone(fetched_user)
         self.assertEqual(fetched_user.email, "test@test.com")
         self.assertTrue(fetched_user.check_password("test"))
