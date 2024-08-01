@@ -22,5 +22,6 @@ def fetch_userData(user_id):
 
 def fetch_course_user(user_id, course_id):
     course_user = CourseUser.query.filter_by(user_id = user_id, course_id = course_id).first()
-    if course_user:
-        raise Exception("User already enrolled.")
+    if not course_user:
+        raise Exception("User not enrolled.")
+    return course_user 

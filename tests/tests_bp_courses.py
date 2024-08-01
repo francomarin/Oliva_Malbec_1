@@ -2,6 +2,7 @@ import unittest
 import os
 from app import db, create_app
 from app.models.course import Course
+from app.models.course_user import CourseUser
 from app.utils.initializers import initialize_roles
 from app.services.fetchers import *
 
@@ -96,6 +97,26 @@ class TestCourseBP(unittest.TestCase):
         response = self.client.delete(f"/courses/{course_id}")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["message"], "Course deleted successfully"), 200
+
+    def enroll_user(self):
+        course = Course(name = "test")
+        user = User(email = "test@test.com")
+        db.session.add(course)
+        db.session.add(user)
+        db.session.commit()
+
+        data = {
+            "user_id": user.id,
+            "course_id": course.id,
+            "grade": "8"
+        }
+
+        response = self.client.post(f"/courses/enroll", json = data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json["message"], "User enrolled successfully")
+
+        user_enrolled = fetch_course_user(user_id = user.id, course_id = course.id)
+        self.assertIsNotNone(user_enrolled) 
 
 if __name__ == "__main__":
     unittest.main()        
