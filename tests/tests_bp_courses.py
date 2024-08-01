@@ -118,5 +118,21 @@ class TestCourseBP(unittest.TestCase):
         user_enrolled = fetch_course_user(user_id = user.id, course_id = course.id)
         self.assertIsNotNone(user_enrolled) 
 
+    def get_users_by_course(self):
+        course = Course(name = "test")
+        user = User(email = "test@test.com")
+        db.session.add(course)
+        db.session.add(user)
+        db.session.commit()
+
+        course_user = CourseUser(user_id = user.id, course_id = course.id, grade = "5")
+        db.session.add(course_user)
+        db.session.commit()
+
+        response = self.client.get(f"/courses/{course.id}/users")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("users", response.json)
+
 if __name__ == "__main__":
     unittest.main()        
