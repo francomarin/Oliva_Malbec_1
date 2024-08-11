@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from app import db
 from app.models.user import User
 from app.models.userData import UserData
@@ -9,6 +10,7 @@ from app.services.fetchers import *
 user_bp = Blueprint("user", __name__)
 
 @user_bp.route("/users", methods = ["POST"])
+@jwt_required()
 def create_user():
     try:
         data = request.get_json()
@@ -54,6 +56,7 @@ def create_user():
         return jsonify({"message": str(e)}), 404
 
 @user_bp.route("/users", methods = ["GET"])
+@jwt_required()
 def get_all_users():
     users = User.query.all()
     users_list = []
@@ -68,6 +71,7 @@ def get_all_users():
     return jsonify({"users": users_list}), 200
 
 @user_bp.route("/users/<int:user_id>", methods = ["GET"])
+@jwt_required()
 def get_user_by_id(user_id):
     try:
         user = fetch_user(user_id)
@@ -83,6 +87,7 @@ def get_user_by_id(user_id):
     return jsonify({"user": data}), 200
 
 @user_bp.route("/users/<int:user_id>", methods = ["PUT"])
+@jwt_required()
 def update_user(user_id):    
     try:
         user = fetch_user(user_id)
@@ -110,6 +115,7 @@ def update_user(user_id):
         return jsonify({"message": str(e)}), 404
 
 @user_bp.route("/users/<int:user_id>", methods = ["DELETE"])
+@jwt_required()
 def delete_user(user_id):
     try:
         user = User.query.filter_by(id = user_id).first()
