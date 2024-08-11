@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from app import db
 from app.models.course import Course 
 from app.services.fetchers import *
@@ -6,6 +7,7 @@ from app.services.fetchers import *
 course_bp = Blueprint("course", __name__)
 
 @course_bp.route("/courses", methods = ["POST"])
+@jwt_required()
 def create_course():
     try:
         data = request.get_json()
@@ -25,6 +27,7 @@ def create_course():
         return jsonify({"message": str(e)}), 404
 
 @course_bp.route("/courses", methods = ["GET"])
+@jwt_required()
 def get_all_courses():
     try:
         courses = Course.query.all()
@@ -40,6 +43,7 @@ def get_all_courses():
         return jsonify({"message": str(e)}), 404
 
 @course_bp.route("/courses/<int:course_id>", methods = ["GET"])
+@jwt_required()
 def get_course_by_id(course_id):
     try:
         course = fetch_course(course_id)
@@ -53,6 +57,7 @@ def get_course_by_id(course_id):
         return jsonify({"message": str(e)}), 404
 
 @course_bp.route("/courses/<int:course_id>", methods = ["PUT"])
+@jwt_required()
 def update_course(course_id):
     try:
         course = fetch_course(course_id)
@@ -67,6 +72,7 @@ def update_course(course_id):
         return jsonify({"message": str(e)}), 404
 
 @course_bp.route("/courses/<int:course_id>", methods = ["DELETE"])
+@jwt_required()
 def delete_course(course_id):
     try:
         course = Course.query.filter_by(id = course_id).first()
@@ -81,6 +87,7 @@ def delete_course(course_id):
         return jsonify({"message": str(e)}), 404
 
 @course_bp.route("/courses/enroll", methods = ["POST"])
+@jwt_required()
 def enroll_user():
     try:
         data = request.get_json()
@@ -106,6 +113,7 @@ def enroll_user():
         return jsonify({"message": str(e)}), 404   
 
 @course_bp.route("/courses/<int:course_id>/users", methods = ["GET"])
+@jwt_required()
 def get_users_by_course(course_id):
     try:
         fetch_course(course_id)
