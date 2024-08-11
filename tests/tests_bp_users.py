@@ -1,6 +1,7 @@
 import unittest
 import os
 from flask import Flask
+from flask_jwt_extended import create_access_token
 from app import db, create_app
 from app.models.user import User
 from app.models.profile import Profile
@@ -21,6 +22,19 @@ class TestUserBP(unittest.TestCase):
 
         initialize_roles()
 
+#ADMIN USER
+        self.user = User(email = "admin@test.com", userdata = UserData())
+        self.user.set_password("admin")
+        role = Role.query.filter_by(name = "ADMINISTRADOR").first()
+        self.profile = Profile(user_id = self.user.id, role_id = role.id)
+
+        db.session.add(self.user)
+        db.session.add(self.profile)
+        db.session.commit()
+
+        self.token = create_access_token(identity = {"id": self.user.id, "role" : role.name})
+
+
     def tearDown(self):
         db.session.rollback()
         db.session.remove()
@@ -34,7 +48,7 @@ class TestUserBP(unittest.TestCase):
             "role" : "ADMINISTRADOR"
         }
 
-        response = self.client.post("/users", json = data)
+        response = self.client.post("/users", json = data, headers = {"Authorization": f"Bearer {self.token}"})
 
         self.assertEqual(response.status_code, 201)
         self.assertIn("id", response.json)
@@ -60,7 +74,7 @@ class TestUserBP(unittest.TestCase):
         db.session.add(user2)
         db.session.commit()
 
-        response = self.client.get("/users")
+        response = self.client.get("/users", headers = {"Authorization": f"Bearer {self.token}"})
 
         self.assertEqual(response.status_code, 200)
         users = response.json["users"]
@@ -77,7 +91,7 @@ class TestUserBP(unittest.TestCase):
         db.session.commit()
 
         user_id = user.id
-        response = self.client.get(f"/users/{user_id}")
+        response = self.client.get(f"/users/{user_id}", headers = {"Authorization": f"Bearer {self.token}"})
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["user"]["id"], user_id)
@@ -94,7 +108,7 @@ class TestUserBP(unittest.TestCase):
             "last_name" : "test"
         }
         user_id = user.id
-        response = self.client.put(f"/users/{user_id}", json = data)
+        response = self.client.put(f"/users/{user_id}", json = data, headers = {"Authorization": f"Bearer {self.token}"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["message"], "User updated successfully")
 
@@ -109,7 +123,7 @@ class TestUserBP(unittest.TestCase):
         db.session.commit()
 
         user_id = user.id
-        response = self.client.delete(f"/users/{user_id}")
+        response = self.client.delete(f"/users/{user_id}", headers = {"Authorization": f"Bearer {self.token}"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["message"], "User deleted successfully")
 
