@@ -6,11 +6,13 @@ from app.models.userData import UserData
 from app.models.role import Role
 from app.models.profile import Profile
 from app.services.fetchers import *
+from app.utils.role_required import admin_required
 
 user_bp = Blueprint("user", __name__)
 
 @user_bp.route("/users", methods = ["POST"])
 @jwt_required()
+@admin_required
 def create_user():
     try:
         data = request.get_json()
@@ -57,6 +59,7 @@ def create_user():
 
 @user_bp.route("/users", methods = ["GET"])
 @jwt_required()
+@admin_required
 def get_all_users():
     users = User.query.all()
     users_list = []
@@ -72,6 +75,7 @@ def get_all_users():
 
 @user_bp.route("/users/<int:user_id>", methods = ["GET"])
 @jwt_required()
+@admin_required
 def get_user_by_id(user_id):
     try:
         user = fetch_user(user_id)
@@ -88,6 +92,7 @@ def get_user_by_id(user_id):
 
 @user_bp.route("/users/<int:user_id>", methods = ["PUT"])
 @jwt_required()
+@admin_required
 def update_user(user_id):    
     try:
         user = fetch_user(user_id)
@@ -116,6 +121,7 @@ def update_user(user_id):
 
 @user_bp.route("/users/<int:user_id>", methods = ["DELETE"])
 @jwt_required()
+@admin_required
 def delete_user(user_id):
     try:
         user = User.query.filter_by(id = user_id).first()
