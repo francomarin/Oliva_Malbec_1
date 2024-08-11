@@ -1,8 +1,11 @@
 import unittest
 import os
+from flask_jwt_extended import create_access_token
 from app import db, create_app
 from app.models.course import Course
 from app.models.course_user import CourseUser
+from app.models.profile import Profile
+from app.models.role import Role
 from app.utils.initializers import initialize_roles
 from app.services.fetchers import *
 
@@ -18,6 +21,19 @@ class TestCourseBP(unittest.TestCase):
 
         initialize_roles()
 
+#ADMIN USER
+        self.user = User(email = "admin@test.com", userdata = UserData())
+        self.user.set_password("admin")
+        role = Role.query.filter_by(name = "ADMINISTRADOR").first()
+        self.profile = Profile(user_id = self.user.id, role_id = role.id)
+
+        db.session.add(self.user)
+        db.session.add(self.profile)
+        db.session.commit()
+
+        self.token = create_access_token(identity = {"id": self.user.id, "role" : role.name})
+
+
     def tearDown(self):
         db.session.rollback()
         db.session.remove()
@@ -29,7 +45,7 @@ class TestCourseBP(unittest.TestCase):
             "name": "test"
         }
 
-        response = self.client.post("/courses", json = data)
+        response = self.client.post("/courses", json = data, headers = {"Authorization": f"Bearer {self.token}"})
 
         self.assertEqual(response.status_code, 201)
         self.assertIn("id", response.json)
@@ -49,7 +65,7 @@ class TestCourseBP(unittest.TestCase):
         db.session.add(course2)
         db.session.commit()
 
-        response = self.client.get("/courses")
+        response = self.client.get("/courses", headers = {"Authorization": f"Bearer {self.token}"})
 
         self.assertEqual(response.status_code, 200)
         courses = response.json["courses"]
@@ -66,7 +82,7 @@ class TestCourseBP(unittest.TestCase):
         db.session.commit()
 
         course_id = course.id
-        response = self.client.get(f"/courses/{course_id}")
+        response = self.client.get(f"/courses/{course_id}", headers = {"Authorization": f"Bearer {self.token}"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["course"]["id"], course_id)
         self.assertEqual(response.json["course"]["name"], "test")    
@@ -80,7 +96,7 @@ class TestCourseBP(unittest.TestCase):
             "name": "updated"
         }
         course_id = course.id
-        response = self.client.put(f"/courses/{course_id}", json = data)
+        response = self.client.put(f"/courses/{course_id}", json = data, headers = {"Authorization": f"Bearer {self.token}"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["message"], "Course updated successfully"), 200
 
@@ -94,7 +110,7 @@ class TestCourseBP(unittest.TestCase):
         db.session.commit()
 
         course_id = course.id
-        response = self.client.delete(f"/courses/{course_id}")
+        response = self.client.delete(f"/courses/{course_id}", headers = {"Authorization": f"Bearer {self.token}"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["message"], "Course deleted successfully"), 200
 
@@ -111,7 +127,7 @@ class TestCourseBP(unittest.TestCase):
             "grade": "8"
         }
 
-        response = self.client.post(f"/courses/enroll", json = data)
+        response = self.client.post(f"/courses/enroll", json = data, headers = {"Authorization": f"Bearer {self.token}"})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json["message"], "User enrolled successfully")
 
@@ -129,7 +145,7 @@ class TestCourseBP(unittest.TestCase):
         db.session.add(course_user)
         db.session.commit()
 
-        response = self.client.get(f"/courses/{course.id}/users")
+        response = self.client.get(f"/courses/{course.id}/users", headers = {"Authorization": f"Bearer {self.token}"})
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("users", response.json)
