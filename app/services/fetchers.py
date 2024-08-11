@@ -16,6 +16,12 @@ def fetch_user(user_id):
         raise Exception('User not found')
     return user
 
+def fetch_user_by_email(email):
+    user = User.query.filter_by(email = email).first()
+    if not user:
+        raise Exception("User not found")
+    return user    
+
 def fetch_userData(user_id):
     user_data = UserData.query.filter_by(user_id=user_id).first()
     return user_data

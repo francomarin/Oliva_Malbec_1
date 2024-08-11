@@ -2,12 +2,14 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
+from flask_jwt_extended import JWTManager
 from app.config import factory
 import os
 
 db = SQLAlchemy()
 migrate = Migrate()
 ma = Marshmallow()
+jwt = JWTManager()
 
 def create_app():
     app_context = os.getenv("FLASK_CONTEXT")
@@ -16,14 +18,17 @@ def create_app():
     app.config.from_object(config_object)
 
     #Blueprints
+    from app.resources.auth import auth_bp
     from app.resources.users import user_bp
     from app.resources.courses import course_bp
+    app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(course_bp)
     
     ma.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
+    jwt.init_app(app)
 
     #TABLAS 
     from app.models.userData import UserData
