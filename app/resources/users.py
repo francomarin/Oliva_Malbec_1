@@ -17,6 +17,8 @@ def create_user():
         email = data.get("email")
         password = data.get("password")
         role_name = data.get("role")
+        if role_name == None:
+            role_name = "ESTUDIANTE"
 
         #Validations
         if not email or not password:
@@ -26,8 +28,6 @@ def create_user():
             return jsonify({"message": "Email already registered"}), 400
 
         role = Role.query.filter_by(name = role_name).first()
-        if not role:
-            return jsonify({"message": "Role not found"}), 400
 
         #User Data creation for User
         user_data = UserData(
