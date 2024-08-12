@@ -9,6 +9,7 @@ from app.models.role import Role
 from app.models.userData import UserData
 from app.utils.initializers import initialize_roles
 from app.services.fetchers import *
+from app.utils.security import check_password, set_password
 
 class TestUserBP(unittest.TestCase):
 
@@ -24,7 +25,7 @@ class TestUserBP(unittest.TestCase):
 
 #ADMIN USER
         self.user = User(email = "admin@test.com", userdata = UserData())
-        self.user.set_password("admin")
+        self.user.password_hash = set_password("admin")
         role = Role.query.filter_by(name = "ADMINISTRADOR").first()
         self.profile = Profile(user_id = self.user.id, role_id = role.id)
 
@@ -61,7 +62,7 @@ class TestUserBP(unittest.TestCase):
 
         self.assertIsNotNone(created_user)
         self.assertEqual(created_user.email, "test@test.com")
-        self.assertTrue(created_user.check_password("test"))
+        self.assertTrue(check_password(hash = created_user.password_hash, password = "test"))
 
         self.assertIsNotNone(created_profile)
         self.assertEqual(created_profile.role_id, role.id)

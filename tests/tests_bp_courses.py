@@ -8,6 +8,7 @@ from app.models.profile import Profile
 from app.models.role import Role
 from app.utils.initializers import initialize_roles
 from app.services.fetchers import *
+from app.utils.security import set_password
 
 class TestCourseBP(unittest.TestCase):
 
@@ -23,7 +24,7 @@ class TestCourseBP(unittest.TestCase):
 
 #ADMIN USER
         self.user = User(email = "admin@test.com", userdata = UserData())
-        self.user.set_password("admin")
+        self.user.password_hash = set_password("admin") 
         role = Role.query.filter_by(name = "ADMINISTRADOR").first()
         self.profile = Profile(user_id = self.user.id, role_id = role.id)
 

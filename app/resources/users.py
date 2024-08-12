@@ -7,6 +7,7 @@ from app.models.role import Role
 from app.models.profile import Profile
 from app.services.fetchers import *
 from app.utils.role_required import admin_required
+from app.utils.security import check_password, set_password
 
 user_bp = Blueprint("user", __name__)
 
@@ -44,7 +45,7 @@ def create_user():
 
         #User creation
         user = User(email = email, userdata = user_data)
-        user.set_password(password)
+        user.password_hash = (set_password(password))
         db.session.add(user)
         db.session.commit()
 

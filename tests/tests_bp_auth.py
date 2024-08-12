@@ -5,6 +5,7 @@ from app import db, create_app
 from app.models.profile import Profile
 from app.models.user import User
 from app.utils.initializers import initialize_roles
+from app.utils.security import set_password
 
 class TestAuthBP(unittest.TestCase):
 
@@ -26,7 +27,7 @@ class TestAuthBP(unittest.TestCase):
 
     def test_login(self):
         user = User(email = "test@test.com")
-        user.set_password("test")
+        user.password_hash = set_password("test")
         db.session.add(user)
         db.session.commit()
 

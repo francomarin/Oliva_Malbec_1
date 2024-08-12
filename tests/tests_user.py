@@ -3,6 +3,7 @@ import os
 from app import db, create_app
 from app.models.user import User
 from app.services.fetchers import *
+from app.utils.security import set_password, check_password
 
 class TestUserModel(unittest.TestCase):
 
@@ -21,14 +22,14 @@ class TestUserModel(unittest.TestCase):
 
     def test_user_creation(self):
         user = User(email = "test@test.com")
-        user.set_password("test")
+        user.password_hash = set_password("test")
         db.session.add(user)
         db.session.commit()
 
         fetched_user = fetch_user(user.id)
         self.assertIsNotNone(fetched_user)
         self.assertEqual(fetched_user.email, "test@test.com")
-        self.assertTrue(fetched_user.check_password("test"))
+        self.assertTrue(check_password(hash = fetched_user.password_hash, password = "test"))
 
 if __name__ == "__main__":
     unittest.main()

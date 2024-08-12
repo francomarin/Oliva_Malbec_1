@@ -4,6 +4,7 @@ from app import db, create_app
 from app.models.course_user import CourseUser
 from app.models.course import Course
 from app.models.user import User
+from app.utils.security import set_password
 
 class TestCourseUserModel(unittest.TestCase):
 
@@ -22,7 +23,7 @@ class TestCourseUserModel(unittest.TestCase):
 
     def test_course_user(self):
         user = User(email = "test@test.com")
-        user.set_password("test")
+        user.password_hash = set_password("test")
         course = Course(name = "test-course")
         db.session.add(user)
         db.session.add(course)
